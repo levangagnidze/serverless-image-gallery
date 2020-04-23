@@ -1,4 +1,4 @@
 {
-  "apiRUL":"https://1rw3wc336l.execute-api.eu-central-1.amazonaws.com/dev/users",
-  "authenticationURL": "https://levangagnidze-app-image-gallery.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=7t9qfd0ms7ikpc7v6tpu98mge1&redirect_uri=http://localhost:3000"
+  "apiRUL":"https://<url>/dev/users",
+  "authenticationURL": "https://<domain>/login?response_type=code&client_id=7t9qfd0ms7ikpc7v6tpu98mge1&redirect_uri=http://localhost:3000"
 }
