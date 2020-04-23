@@ -1,6 +1,6 @@
 # serverless-image-gallery
 serverless-image-gallery
 
-$description
+# description
 
 Playground for serverless framework
