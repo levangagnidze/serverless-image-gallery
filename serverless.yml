@@ -1,0 +1,79 @@
+org: levangagnidze
+app: app-image-gallery
+service: manage-user
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-central-1
+  stage: ${self:custom.currentStage}
+  iamRoleStatements:
+  - Effect: Allow  
+    Action: # Permission to DynamoDB table
+      - dynamodb:DescribeTable
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+    Resource:  !Join
+                - ':'
+                - - 'arn:aws:dynamodb'
+                  - Ref: 'AWS::Region'
+                  - Ref: 'AWS::AccountId'
+                  - 'table/${self:custom.userTableName}'
+package:
+  exclude:
+    - frontend/**
+    - resources/**
+
+custom:
+  defaultStage: dev
+  currentStage: ${opt:stage, self:custom.defaultStage}
+  userPoolName: app-user-pool-${self:custom.currentStage}
+  userPoolClientName: app-user-pool-client-${self:custom.currentStage}
+  userTableName: user-${opt:stage,'dev'}
+
+functions:
+  userConfirmed:
+    handler: src/cognitoHandler.createNewUser
+    events:
+      - cognitoUserPool:
+          pool: ${self:custom.userPoolName}
+          trigger: PreSignUp
+          existing: true
+    environment:
+      USER_TABLE_NAME: ${self:custom.userTableName}
+  manageUser:
+    handler: src/manageUserHandler.manageUser
+    events:
+      - http:
+          path: /users
+          method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+          cors: true
+    environment:
+      USER_TABLE_NAME: ${self:custom.userTableName}
+resources:
+  - ${file(resources/cognitoResources.yml)}
+  - ${file(resources/dynamoResources.yml)}
+
+Outputs:
+  CognitoUserPoolArn:
+    Value:
+      Fn::GetAtt:
+        - CognitoUserPool
+        - Arn
+    Export:
+      Name: CognitoUserPoolArn-${self:custom.currentStage}
+  DynamoUserTableArn:
+    Value:
+      Fn::GetAtt:
+        - UserTable
+        - Arn
+    Export:
+      Name: DynamoUserTableArn-${self:custom.currentStage}
