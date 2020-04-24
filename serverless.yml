@@ -1,5 +1,5 @@
 org: levangagnidze
-app: app-image-gallery
+# app: app-image-gallery
 service: manage-user
 
 provider:
@@ -31,6 +31,15 @@ provider:
                 - - 'arn:aws:s3:::'
                   - Ref: ImageGalleryBucket
                   - '/*'
+  - Effect: "Allow"
+    Action:
+      - "s3:ListBucket"
+      - "s3:GetObject"
+    Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - Ref: ImageGalleryBucket
+                
 package:
   exclude:
     - frontend/**
@@ -86,28 +95,28 @@ functions:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
-          cors: true
-      - http:
-          path: /images
-          method: post
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: ApiGatewayAuthorizer
-          cors: true        
+          cors: true      
     environment:
       IMAGE_GALLERY_BUCKET: ${self:custom.imageGalleryBucketName}  
   manageImages:
     handler: src/manageImagesHandler.manageImages
     events:
       - http:
-          path: /images
+          path: /images/
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
           cors: true
+      - http:
+          path: /images/
+          method: post
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+          cors: true  
     environment:
       IMAGE_GALLERY_BUCKET: ${self:custom.imageGalleryBucketName}      
     

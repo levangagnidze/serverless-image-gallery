@@ -1,9 +1,20 @@
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
+
+const getSignedURL = async (backetName,operation ,key)=>{
+    
+    const params = {
+            Bucket: backetName, 
+            Key: key
+    }
+    return s3.getSignedUrlPromise(operation , params);
+}
+
 const getUserName = (event) => {
     
     if(!event.headers["Authorization"]){
         throw new Error('Authorization not provided');
     }
-
 
     try{
 
@@ -20,7 +31,8 @@ const getUserName = (event) => {
 }
 
 module.exports = {
-    getUserName
+    getUserName,
+    getSignedURL
 };
 
 
