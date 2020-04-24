@@ -42,3 +42,11 @@ Resources:
         Type: COGNITO_USER_POOLS
         ProviderARNs:
           - Fn::GetAtt: [CognitoUserPool, Arn]
+Outputs:
+  CognitoUserPoolArn:
+    Value:
+      Fn::GetAtt:
+        - CognitoUserPool
+        - Arn
+    Export:
+      Name: CognitoUserPoolArn-${self:custom.currentStage}

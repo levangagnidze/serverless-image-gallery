@@ -27,6 +27,7 @@ package:
   exclude:
     - frontend/**
     - resources/**
+    - events/**
 
 custom:
   defaultStage: dev
@@ -61,19 +62,3 @@ functions:
 resources:
   - ${file(resources/cognitoResources.yml)}
   - ${file(resources/dynamoResources.yml)}
-
-Outputs:
-  CognitoUserPoolArn:
-    Value:
-      Fn::GetAtt:
-        - CognitoUserPool
-        - Arn
-    Export:
-      Name: CognitoUserPoolArn-${self:custom.currentStage}
-  DynamoUserTableArn:
-    Value:
-      Fn::GetAtt:
-        - UserTable
-        - Arn
-    Export:
-      Name: DynamoUserTableArn-${self:custom.currentStage}

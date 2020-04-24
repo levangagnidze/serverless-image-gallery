@@ -12,3 +12,11 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
+Outputs:
+  DynamoUserTableArn:
+    Value:
+      Fn::GetAtt:
+        - UserTable
+        - Arn
+    Export:
+      Name: DynamoUserTableArn-${self:custom.currentStage}

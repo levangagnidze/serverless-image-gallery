@@ -1,47 +1,38 @@
 'use strict';
 
-module.exports.manageUser = (event, context, callback) => {
+const {getUserName} = require('./lib/utils.js');
+const {itemToUser} = require('./lib/mappers.js');
+const {createResponse} = require('./lib/responses.js');
+const AWS = require('aws-sdk');
+
+var dynamodb = new AWS.DynamoDB();
+
+module.exports.manageUser = async (event, context, callback) => {
   console.log("event=>",event);
   console.log("context=>",context);
   
-  if(event.headers["Authorization"]){
-      let username = getUserName(event.headers["Authorization"]);
-      console.log("user name",username);
-      const response = {
-          statusCode: 200,
-          headers: {
-            "Access-Control-Allow-Origin" : "*",
-            "Access-Control-Allow-Credentials" : true
-          },
-          body: JSON.stringify({
-            username: `Hello ${username}`
-          })
-        };
+      try{
+        let username = getUserName(event);
+        console.log("user name",username);
         
-      return callback(null, response);    
-  }
+        let params = {
+          Key: {
+           "username": {
+             S: username
+            }
+          }, 
+          TableName: process.env.USER_TABLE_NAME
+         };
 
-  const response = {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin" : "*",
-      "Access-Control-Allow-Credentials" : true
-    },
-    body: JSON.stringify({
-      message: 'Hello There'
-    }),
-  };
+        let data = await dynamodb.getItem(params).promise();
+        
+        const response = createResponse(200,itemToUser(data));
+        return callback(null, response);   
 
-  callback(null, response);
+      }catch(error){
+        const response = createResponse(400,{
+          message: error.message
+        });
+        callback(null, response);
+      }  
 };
-
-
-function getUserName(authHeader){
-    let id_token = authHeader.split(" ")[1];
-    let body = id_token.split(".")[1];
-    let bodyObj = Buffer.from(body, 'base64').toString('ascii');
-
-    console.log("bodyObj=>",bodyObj);
-    
-    return JSON.parse(bodyObj)["cognito:username"];
-}
