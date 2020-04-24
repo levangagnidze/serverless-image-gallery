@@ -1,0 +1,33 @@
+Resources:
+  ImageGalleryBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.imageGalleryBucketName}
+      AccessControl: Private
+      Tags: 
+        - 
+          Key: Description
+          Value: Image gallery bucket
+      # Set the CORS policy
+      CorsConfiguration:
+        CorsRules:
+          -
+            AllowedOrigins:
+              - '*'
+            AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+              - HEAD
+            MaxAge: 3000  
+Outputs:
+  ImageGalleryBucketArn:
+    Value:
+      Fn::GetAtt:
+        - ImageGalleryBucket
+        - Arn
+    Export:
+      Name: ImageGalleryBucketArn-${self:custom.currentStage}
