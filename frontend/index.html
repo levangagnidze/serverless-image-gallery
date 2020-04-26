@@ -1,114 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Cognito Authentication for Serverless example</title>
-
-<script>
-
-    let config = undefined
-    let id_token = undefined
-
-    function preparePage(){
-
-      id_token = getIDToken()
-
-      // TODO: simplification: if id_token undefined, redirect to authentication
-
-      if (id_token !== undefined){
-        document.getElementById('authentication-display').innerText = "Authenticated"
-      }
-
-      // load config.json and call stuff that depends on it
-      fetch('./config.json').then(res => res.json())
-      .then((configJson) => {
-        config = configJson
-        prepareAuthenticationLink(config['authenticationURL'])
-
-        if(id_token !== undefined) {
-          showServiceCallButton()
-          setCurlCommand()
-        }
-
-      }).catch(err => console.error(err))
-    }
-
-    function prepareAuthenticationLink(authenticationURL) {
-      let authLink = document.getElementById('authentication-link')
-      authLink.href = config['authenticationURL']
-    }
-
-    function showServiceCallButton(){
-      document.getElementById('call-service-button').hidden=false
-    }
-
-    function getIDToken(){
-      let url = new URL(location.href)
-      let this_id_token = undefined
-
-      url.hash.substr(1).split('&').some(
-        function(keyValueString){
-          let keyValueArray = keyValueString.split('=')
-          if(keyValueArray[0]==="id_token"){
-            this_id_token = keyValueArray[1]
-            return true
-          }
-        }
-      )
-
-      return this_id_token
-    }
-
-    function callService(){
-      let serviceURL = config['apiRUL']
-
-      //console.log('calling service witj id token: ' + id_token)
-
-      fetch(serviceURL,
-        {
-          credentials: 'include',
-          headers: {
-            'Authorization': id_token
-          }
-        }).then(res => res.json())
-        .then((resultJson) => {
-          console.log(resultJson)
-          document.getElementById('call-result').innerText = 'Result: ' + resultJson.message
-        }).catch(err => {
-          console.assert('Error Calling Service:')
-          console.error(err)
-          document.getElementById('call-result').innerText = 'ERROR: ' + err
-      })
-    }
-
-    function setCurlCommand(){
-      let curlCommand= "curl"
-      curlCommand += " -H \"Authorization:" + " " + id_token + "\" "
-      curlCommand +=  config['apiRUL']
-      document.getElementById('curl-command').innerText = curlCommand
-    }
-
-
-</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <title>Image Gallery App</title>
+  <script> 
+    $(function(){
+      $("#user-block").load("userBlock.html"); 
+    });
+    </script> 
+  <script src="main.js"></script>
 
 </head>
-<body onload="preparePage()">
 
+<body onload="preparePage();">
 
-<div id="authentication">
-    <div id="authentication-display">Not authenticated</div>
-    <a href="" id="authentication-link">Authenticate</a>
-</div>
-
-<!-- TODO: convenicence: have a button to copy command to clipboard -->
-<div id="curl-command"></div>
-
-<button id="call-service-button" hidden="true" onclick="callService()">
-Call Service
-</button>
-
-<div id="call-result"></div>
-
-
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Gallery App</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a id="login" href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="row" id="wellcome-row">
+    <div class="container">
+      <h2 class="text-info">Please Login/SignUp for cool experiance</h2>
+    </div>
+  </div>
+  <div class="row" id="user-row" hidden=true>
+    <div id="user-block" class="row"></div>
+  </div>
+  <div class="row" id="new-image-row" hidden=true>
+    <div class="container">
+      <button onclick="onUpload();" style="margin-top: 10px;"  class="btn btn-primary" data-dismiss="modal" id="btn-save2" type="button">+ Upload</button>
+      <a id="input-wrapper" style="margin-top: 20px;"></a>
+    </div>
+  </div>
+  <div class="row" id="images-row" hidden=true>
+    <div class="container">
+      <div class="panel-heading"> 
+        <h4>List of files</h4>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Folder</th>
+              <th>File name</th>
+              <th>Last Modified</th>
+            </tr>
+          </thead>
+          <tbody id="images-table">
+          </tbody>
+        </table>
+      </div>  
+    </div>
+  </div>
 </body>
 </html>

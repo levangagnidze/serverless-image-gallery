@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-module.exports.createNewUser = event => {
+module.exports.createNewUser = async event => {
   console.log("Event received from congnito");
   console.log(event);
 

@@ -46,6 +46,9 @@ package:
     - resources/**
     - events/**
 
+plugins:
+  - serverless-finch
+
 custom:
   defaultStage: dev
   currentStage: ${opt:stage, self:custom.defaultStage}
@@ -53,6 +56,9 @@ custom:
   userPoolClientName: app-user-pool-client-${self:custom.currentStage}
   userTableName: user-${self:custom.currentStage}
   imageGalleryBucketName: levangagnidze-image-gallery-${self:custom.currentStage}
+  client:
+    bucketName: levangagnidze-gallery-frontend-${self:custom.currentStage}
+    distributionFolder: frontend
 
 functions:
   userConfirmed:
