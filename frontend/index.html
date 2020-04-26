@@ -49,8 +49,8 @@
   </div>
   <div class="row" id="new-image-row" hidden=true>
     <div class="container">
-      <button onclick="onUpload();" style="margin-top: 10px;"  class="btn btn-primary" data-dismiss="modal" id="btn-save2" type="button">+ Upload</button>
-      <a id="input-wrapper" style="margin-top: 20px;"></a>
+      <input id="fileInput" type="file" style="display:none;" onclick="onUpload();"/>
+      <button type="button" class="btn btn-primary" style="margin-top:10px;float: left;" value="Choose Files!" onclick="document.getElementById('fileInput').click();">+Upload</button>
     </div>
   </div>
   <div class="row" id="images-row" hidden=true>

@@ -163,11 +163,7 @@ async function postImage(data,fileName){
 
 
 function onUpload(){
-    var input = document.createElement("INPUT");
-    input.setAttribute("type", "file");
-    input.setAttribute("id","image-input");
-    document.getElementById('input-wrapper').appendChild(input);
-    input.innerHTML = "uploading...";
+    var input = document.getElementById("fileInput");
 
     input.addEventListener('change', function() {
         
