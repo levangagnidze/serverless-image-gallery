@@ -1,6 +1,0 @@
-{
-  "apiRUL":"<<APP_URL>>",
-  "authenticationURL": "https://<<YOUR_DOMAIN>>/login?response_type=token&client_id=7t9qfd0ms7ikpc7v6tpu98mge1&redirect_uri=http://localhost:3000",
-  "imagePath":"images/",
-  "userPath":"users/"
-}
